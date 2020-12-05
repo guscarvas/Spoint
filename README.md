@@ -24,11 +24,14 @@ Pick a folder where you want our program to be, when you're inside the folder ri
 When you're done coding for a while or just finished an important part it is good practice to "commit" these changes to our online version, so how do we do this?
 
 git add * --- This tells git that we want to add all the changes we made to our upload
+
 git commit -m "<write a message here which explains what you've done>" --- this creates the update we will send to our online repository
+
 git push origin master --- this sends the update
 
 ### Important observations!!
 Always run this command before you start coding in your computer:
+
 git pull --- This command updates your local repository with all the changes that have been uploaded by everyone, this way you're up to date and we're less likely to run into any conflicts with the files
 
 ### That's it! If any errors show up, don't think twice about asking for help!
