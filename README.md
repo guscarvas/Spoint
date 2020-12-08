@@ -35,3 +35,8 @@ Always run this command before you start coding in your computer:
 git pull --- This command updates your local repository with all the changes that have been uploaded by everyone, this way you're up to date and we're less likely to run into any conflicts with the files
 
 ### That's it! If any errors show up, don't think twice about asking for help!
+
+
+### Good links:
+https://www.codecademy.com/articles/what-is-crud
+https://www.codementor.io/@garethdwyer/building-a-crud-application-with-flask-and-sqlalchemy-dm3wv7yu2
