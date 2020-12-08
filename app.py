@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from models import Performer,Consumer
 import os
 import sqlite3
 
@@ -19,7 +20,12 @@ def home():
 
 
 
-@app.route('/consumer/', methods=['GET','POST'])
+@app.route('/performers/', methods=['GET'])
+def all_consumer():
+    performers = Performer.query.all()
+    return jsonify(performers)
+
+@app.route('/consumer/', methods=['GET'])
 def all_consumer():
 
     return jsonify()
