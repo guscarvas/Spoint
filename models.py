@@ -8,6 +8,11 @@ class User(db.Model):
     performer_id = db.relationship('Performer', backref='User', lazy=True,uselist=False)
     customer_id = db.relationship('Customer', backref='User', lazy=True,uselist=False)
 
+    def __init__(self,email,password,role):
+        self.email = email
+        self.password = password
+        self.role = role
+
 
 class Performer(db.Model):
     id = db.Column(db.Integer, primary_key=True)

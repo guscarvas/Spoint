@@ -28,21 +28,25 @@ def home():
 @app.route('/user/',methods=['GET','POST'])
 def users():
     if request.method == 'POST':
+        print(request.json)
         email = request.json.get('email')
         password_hash = bcrypt.generate_password_hash(request.json.get('password')).encode('utf-8')
         role = request.json.get('role')
         newuser = User(email=email, password=password_hash, role=role)
+        db.session.add(newuser)
+        db.session.commit()
+        print(newuser.id)
         name = request.json.get('name')
         if role == 'Performer':
             newperformer = Performer(email=email, user_id=newuser.id, name=name)
             newuser.performer_id = newperformer.id
-            db.session.add_all([newuser,newperformer])
+            db.session.add(newperformer)
         if role == 'Customer':
             newcustomer = Customer(email=email, user_id=newuser.id, name=name)
             newuser.customer_id = newcustomer.id
-            db.session.add_all([newuser, newcustomer])
+            db.session.add(newcustomer)
         db.session.commit()
-    return jsonify(newuser)
+        return jsonify(newuser)
 
 @app.route('/performers/', methods=['GET'])
 def performers():
@@ -51,8 +55,14 @@ def performers():
 
 @app.route('/consumer/', methods=['GET'])
 def all_consumer():
+    customers = Customer.query.all()
+    return jsonify(customers)
 
-    return jsonify()
+@app.route('/restartdb/',methods=['GET'])
+def restart():
+    User.query.delete()
+    Performer.query.delete()
+    Customer.query.delete()
 
 
 if __name__ == '__main__':
