@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
@@ -53,7 +53,7 @@ def performers():
     performers = Performer.query.all()
     return jsonify(performers)
 
-@app.route('/consumer/', methods=['GET'])
+@app.route('/consumers/', methods=['GET'])
 def all_consumer():
     customers = Customer.query.all()
     return jsonify(customers)
@@ -64,6 +64,16 @@ def restart():
     Performer.query.delete()
     Customer.query.delete()
 
+@app.route('/login/',methods=['POST'])
+def login():
+    email = request.json.get('email')
+    password = request.json.get('password')
+    user = User.query.filter_by(email=email).first()
+    if bcrypt.check_password_hash(user.password,password):
+        print('logged in')
+        session["user_id"] = user.id
+        session["role"] = user.role
+#         return logged user and info?
 
 if __name__ == '__main__':
     app.run()
