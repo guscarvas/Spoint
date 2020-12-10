@@ -1,3 +1,4 @@
+from sqlathanor import FlaskBaseModel, initialize_flask_sqlathanor
 from flask import Flask, jsonify, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -6,7 +7,7 @@ import os
 import sqlite3
 
 app = Flask(__name__)
-app.config['SECRET_KEY']='sssdhgclshfsh;shd;jshjhsjhjhsjldchljk'
+app.config['SECRET_KEY'] = 'sssdhgclshfsh;shd;jshjhsjhjhsjldchljk'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///website.db'
 
 db = SQLAlchemy(app)
