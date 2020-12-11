@@ -6,6 +6,8 @@ from flask_bcrypt import Bcrypt
 import os
 import sqlite3
 
+#steven
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'sssdhgclshfsh;shd;jshjhsjhjhsjldchljk'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///website.db'
