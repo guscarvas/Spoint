@@ -34,9 +34,6 @@ class Performer(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
 
-    def update(self):
-
-
 
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -64,12 +61,11 @@ class PerformerSchema(ModelSchema):
         model = Performer
         sql_session = db.session
 
+
 class CustomerSchema(ModelSchema):
     class Meta:
         model = Customer
         sql_session = db.session
-
-
 
 #
 # from sqlathanor import declarative_base, Column, relationship
