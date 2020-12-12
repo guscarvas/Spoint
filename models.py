@@ -67,6 +67,29 @@ class CustomerSchema(ModelSchema):
         model = Customer
         sql_session = db.session
 
+
+class Job(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    #customer_id = db.Column(db.Integer)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False )
+    performer_id = db.Column(db.Integer, db.ForeignKey('performer.id'))
+    hours_booked = db.Column(db.Float, nullable=False)
+    start_time = db.Column(db.DateTime, nullable=False)
+    performer_score = db.Column(db.Float, nullable=False, default=0)
+    date = db.Column(db.DateTime, nullable=False)
+    # customer_score =
+    # status =
+    price_per_hour = db.Column(db.Float, nullable=False)
+    address = db.Column(db.String(80), nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
+
+
+class JobSchema(ModelSchema):
+    class Meta:
+        model = Job
+        sql_session = db.session
+
 #
 # from sqlathanor import declarative_base, Column, relationship
 # from sqlalchemy import Integer, String, Float, ForeignKey, DateTime, func

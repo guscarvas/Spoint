@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Flask, jsonify, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
@@ -10,13 +12,15 @@ import sqlite3
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'sssdhgclshfsh;shd;jshjhsjhjhsjldchljk'
+app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///website.db'
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 bcrypt = Bcrypt(app)
 
-from models import User, Performer, Customer, UserSchema, PerformerSchema, CustomerSchema
+from models import User, Performer, Customer, UserSchema, PerformerSchema, CustomerSchema, Job, JobSchema
 
 db.create_all()
 db.session.commit()
@@ -26,8 +30,8 @@ db.session.commit()
 def home():
     return '<h1>Hello World!</h1>'
 
-
-################# USERS
+#############
+#### USERS
 
 @app.route('/user/', methods=['GET', 'POST'])
 def users():
@@ -84,7 +88,7 @@ def consumers():
     customers_query = Customer.query.all()
     customer_schema = CustomerSchema(many=True)
     performers_output = customer_schema.dump(customers_query).data
-    return jsonify(customers_output)
+    return jsonify(performers_output)
 
 
 @app.route('/customer/<int:id_customer>', methods=['GET', 'PUT', 'DEL'])
@@ -122,6 +126,83 @@ def login():
 
 
 #         return logged user and info?
+
+@app.route('/create_job/', methods=["POST"])
+def create_job():
+    customer_id = request.json.get('customer_id')
+    performer_id = request.json.get('performer_id')
+    hours_booked = request.json.get('hours_booked')
+    start_time = request.json.get('start_time')
+    date = request.json.get('date')
+    address = request.json.get('address')
+    price_per_hour = request.json.get('price_per_hour')
+    #id = 2
+    #customer_id = 1
+    #performer_id = 1
+    #hours_booked = 5.0
+    #start_time = datetime.now()
+    #date = datetime.now()
+    #address = "Arena Xangpau"
+    #price_per_hour = 85.0
+
+
+    addedjob = Job(id=id,customer_id = customer_id,performer_id = performer_id, hours_booked=hours_booked, start_time=start_time, date=date, address=address,price_per_hour=price_per_hour)
+    db.session.add(addedjob)
+    db.session.commit()
+
+    job_schema = JobSchema()
+    output = job_schema.dump(addedjob).data
+    return jsonify(output)
+
+
+@app.route('/performer/my_jobs/', methods=["GET", "POST"])
+def list_jobs_performer():
+    user_jobs = Job.query.all()
+    #user_jobs = Job.query.filter_by(performer_id = request.json.get('performer_id'))
+    job_schema = JobSchema(many=True)
+    job_output = job_schema.dump(user_jobs).data
+    return jsonify({'your jobs are' : job_output})
+
+@app.route('/customer/my_jobs/', methods=["GET", "POST"])
+def list_jobs_customer():
+    user_jobs = Job.query.all()
+    #user_jobs = Job.query.filter_by(customer_id = request.json.get('customer_id'))
+    job_schema = JobSchema(many=True)
+    job_output = job_schema.dump(user_jobs).data
+    return jsonify({'your jobs are' : job_output})
+
+
+
+
+
+@app.route('/delete_job/', methods=["POST"])
+def delete_job():
+    id = request.json.get('id')
+    job = Job.query.filter_by(id = id)
+    db.session.delete(job)
+    db.session.commit()
+    return "Job was deleted!"
+
+
+@app.route('/update_job/', methods=["POST"])
+def update_job():
+    id = request.json.get('id')
+    type = request.json.get('type')
+    value = request.json.get('value')
+    job = Job.query.filter_by(id=id)
+    setattr(job,type,value)
+    db.session.commit()
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run()
