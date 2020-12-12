@@ -8,7 +8,7 @@ from flask_bcrypt import Bcrypt
 import os
 import sqlite3
 
-#steven
+# steven
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'sssdhgclshfsh;shd;jshjhsjhjhsjldchljk'
@@ -20,7 +20,8 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 bcrypt = Bcrypt(app)
 
-from models import User, Performer, Customer, UserSchema, PerformerSchema, CustomerSchema, Job, JobSchema
+from models import User, Performer, Customer, UserSchema, PerformerSchema, CustomerSchema, Job, JobSchema, Transaction, \
+    TransactionSchema
 
 db.create_all()
 db.session.commit()
@@ -29,6 +30,7 @@ db.session.commit()
 @app.route('/', methods=['GET'])  # Root of your web platform
 def home():
     return '<h1>Hello World!</h1>'
+
 
 #############
 #### USERS
@@ -127,6 +129,8 @@ def login():
 
 #         return logged user and info?
 
+
+#HERE IS THE JOB CRUD
 @app.route('/create_job/', methods=["POST"])
 def create_job():
     customer_id = request.json.get('customer_id')
@@ -136,17 +140,17 @@ def create_job():
     date = request.json.get('date')
     address = request.json.get('address')
     price_per_hour = request.json.get('price_per_hour')
-    #id = 2
-    #customer_id = 1
-    #performer_id = 1
-    #hours_booked = 5.0
-    #start_time = datetime.now()
-    #date = datetime.now()
-    #address = "Arena Xangpau"
-    #price_per_hour = 85.0
+    # id = 2
+    # customer_id = 1
+    # performer_id = 1
+    # hours_booked = 5.0
+    # start_time = datetime.now()
+    # date = datetime.now()
+    # address = "Arena Corinthians"
+    # price_per_hour = 85.0
 
-
-    addedjob = Job(id=id,customer_id = customer_id,performer_id = performer_id, hours_booked=hours_booked, start_time=start_time, date=date, address=address,price_per_hour=price_per_hour)
+    addedjob = Job(id=id, customer_id=customer_id, performer_id=performer_id, hours_booked=hours_booked,
+                   start_time=start_time, date=date, address=address, price_per_hour=price_per_hour)
     db.session.add(addedjob)
     db.session.commit()
 
@@ -158,27 +162,26 @@ def create_job():
 @app.route('/performer/my_jobs/', methods=["GET", "POST"])
 def list_jobs_performer():
     user_jobs = Job.query.all()
-    #user_jobs = Job.query.filter_by(performer_id = request.json.get('performer_id'))
+    # user_jobs = Job.query.filter_by(performer_id = request.json.get('performer_id'))
     job_schema = JobSchema(many=True)
     job_output = job_schema.dump(user_jobs).data
-    return jsonify({'your jobs are' : job_output})
+    return jsonify({'your jobs are': job_output})
+
 
 @app.route('/customer/my_jobs/', methods=["GET", "POST"])
 def list_jobs_customer():
     user_jobs = Job.query.all()
-    #user_jobs = Job.query.filter_by(customer_id = request.json.get('customer_id'))
+    # user_jobs = Job.query.filter_by(customer_id = request.json.get('customer_id'))
+    #still need to figure out how the filter works
     job_schema = JobSchema(many=True)
     job_output = job_schema.dump(user_jobs).data
-    return jsonify({'your jobs are' : job_output})
-
-
-
+    return jsonify({'your jobs are': job_output})
 
 
 @app.route('/delete_job/', methods=["POST"])
 def delete_job():
     id = request.json.get('id')
-    job = Job.query.filter_by(id = id)
+    job = Job.query.filter_by(id=id)
     db.session.delete(job)
     db.session.commit()
     return "Job was deleted!"
@@ -190,11 +193,65 @@ def update_job():
     type = request.json.get('type')
     value = request.json.get('value')
     job = Job.query.filter_by(id=id)
-    setattr(job,type,value)
+    setattr(job, type, value)
     db.session.commit()
 
 
 
+
+
+
+#HERE IS THE TRANSACTION CRUD
+@app.route('/transaction/', methods=["POST"])
+def create_transaction():
+    value = request.json.get('value')
+    code = request.json.get('code')
+    new_transaction = Transaction(value=value, code=code)
+    db.session.add(new_transaction)
+    db.session.commit()
+
+    transaction_schema = TransactionSchema()
+    output = transaction_schema.dump(new_transaction).data
+    return jsonify(output)
+
+
+@app.route('/performer/my_jobs/', methods=["GET", "POST"])
+def list_transactions_performer():
+    user_transactions = Transaction.query.all()
+    # user_transactions = Transaction.query.filter_by(performer_id = request.json.get('performer_id'))
+    transaction_schema = TransactionSchema(many=True)
+    transaction_output = transaction_schema.dump(user_transactions).data
+    return jsonify({'your transactions are': transaction_output})
+
+
+@app.route('/customer/my_jobs/', methods=["GET", "POST"])
+def list_transactions_customer():
+    user_transactions = Transaction.query.all()
+    # user_transactions = Transaction.query.filter_by(customer_id = request.json.get('customer_id'))
+    transaction_schema = TransactionSchema(many=True)
+    transaction_output = transaction_schema.dump(user_transactions).data
+    return jsonify({'your transactions are': transaction_output})
+
+
+@app.route('/delete_transaction/', methods=["POST"])
+def delete_transaction():
+    id = request.json.get('id')
+    transaction = Transaction.query.filter_by(id=id)
+    db.session.delete(transaction)
+    db.session.commit()
+    return "The desired transaction was deleted!"
+
+
+@app.route('/update_transaction/', methods=["POST"])
+def update_job():
+    id = request.json.get('id')
+    type = request.json.get('type')
+    value = request.json.get('value')
+    transaction = Transaction.query.filter_by(id=id)
+    setattr(transaction, type, value)
+    transaction.updated_at = datetime.now()
+    db.session.commit()
+    return "The transaction was updated!"
 
 
 
