@@ -90,6 +90,20 @@ class JobSchema(ModelSchema):
         model = Job
         sql_session = db.session
 
+
+
+
+class Transaction (db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    value = db.Column(db.Float, nullable=False)
+    code = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
+
+class TransactionSchema(ModelSchema):
+    class Meta:
+        model = Transaction
+        sql_session = db.session
 #
 # from sqlathanor import declarative_base, Column, relationship
 # from sqlalchemy import Integer, String, Float, ForeignKey, DateTime, func
