@@ -38,19 +38,30 @@ def home():
 def users():
     if request.method == 'POST':
         print(request.json)
+
         email = request.json.get('email')
         password_hash = bcrypt.generate_password_hash(request.json.get('password')).encode('utf-8')
         role = request.json.get('role')
+        name = request.json.get('name')
+        fiscal_code = request.json.get('fiscal_code')
+        address = request.json.get('address')
+
         newuser = User(email=email, password=password_hash, role=role)
         db.session.add(newuser)
         db.session.commit()
-        print(newuser.id)
-        name = request.json.get('name')
+
         if role == 'Performer':
-            newperformer = Performer(email=email, user=newuser, name=name)
+
+            category = request.json.get('category')
+            genre = request.json.get('genre')
+            birthday = request.json.get('birthday')
+            cost_per_hour = request.json.get('cost_per_hour')
+            newperformer = Performer(email=email, user=newuser, name=name, category=category, genre=genre, birthday=birthday,
+                                     cost_per_hour=cost_per_hour,fiscal_code=fiscal_code, address=address)
             db.session.add(newperformer)
         if role == 'Customer':
-            newcustomer = Customer(email=email, user_id=newuser.id, name=name)
+            newcustomer = Customer(email=email, user=newuser, name=name, birthday=birthday,
+                                   fiscal_code=fiscal_code, address=address)
             newuser.customer_id = newcustomer.id
             db.session.add(newcustomer)
         db.session.commit()
@@ -73,14 +84,27 @@ def performer(id_performer):
     performer_schema = PerformerSchema()
     if request.method == 'GET':
         performer_output = performer_schema.dump(performer_query).data
-        print("passei no GET")
     elif request.method == 'PUT':
-        pass
+        performer_query.update(request.json)
     elif request.method == 'DEL':
         performer_output = performer_schema.dump(performer_query).data
         performer_query.delete()
         db.session.commit()
     return jsonify(performer_output)
+
+@app.route('/search/', methods=['GET'])
+def search():
+    category = request.json.get('category')
+    genre = request.json.get('genre')
+    cost_minimum = request.json.get('cost_minimum')
+    cost_max = request.json.get('cost_max')
+    city = request.json.get('city')
+    performers_query = Performer.query.filter_by(category=category, genre=genre, city=city).filter(cost_minimum < Performer.cost_per_hour < cost_max).all()
+    performer_schema = PerformerSchema(many=True)
+    performers_output = performer_schema.dump(performers_query).data
+    return jsonify(performers_output)
+
+
 
 
 @app.route('/consumer/', methods=['GET'])
@@ -100,7 +124,7 @@ def customer(id_customer):
         customer_output = customer_schema.dump(customer_query).data
 
     elif request.method == 'PUT':
-        pass
+        customer_query.update(request.json)
     elif request.method == 'DEL':
         customer_output = customer_schema.dump(customer_query).data
         customer_query.delete()

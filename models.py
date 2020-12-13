@@ -1,5 +1,6 @@
 from app import db, ma
 from marshmallow_sqlalchemy import ModelSchema
+import json
 
 
 class User(db.Model):
@@ -16,6 +17,12 @@ class User(db.Model):
         self.role = role
 
 
+class UserSchema(ModelSchema):
+    class Meta:
+        model = User
+        sql_session = db.session
+
+
 class Performer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # username = db.Column(db.String(50), unique=True, nullable=False)
@@ -23,16 +30,33 @@ class Performer(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship("User", back_populates="performer")
     name = db.Column(db.String(50), nullable=False)
-    cost_per_hour = db.Column(db.Float, nullable=True)
+    cost_per_hour = db.Column(db.Float, nullable=False)
+    genre = db.Column(db.String(120), nullable=False)
+    category = db.Column(db.String(120), nullable=False)
     profile_pic_url = db.Column(db.String(100), nullable=True)
-    birthday = db.Column(db.DateTime, nullable=True)
+    birthday = db.Column(db.DateTime, nullable=False)
     score = db.Column(db.Float, nullable=False, default=0)
-    search_city = db.Column(db.String(30), nullable=True)
-    search_state = db.Column(db.String(30), nullable=True)
-    fiscal_code = db.Column(db.String(20), nullable=True)
+    search_city = db.Column(db.String(30), nullable=False)
+    fiscal_code = db.Column(db.String(20), nullable=False)
+    address = db.Column(db.String(100), nullable=False)
     money = db.Column(db.Float, nullable=False, default=0)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
+
+    def update(self,jsonInfo):
+        if jsonInfo.get('email'):
+            user = User.query.get(self.user_id)
+            user.email = jsonInfo.get('email')
+        for key, value in jsonInfo.iteritems():
+            setattr(self, key, value)
+        db.session.commit()
+
+
+
+class PerformerSchema(ModelSchema):
+    class Meta:
+        model = Performer
+        sql_session = db.session
 
 
 class Customer(db.Model):
@@ -45,21 +69,18 @@ class Customer(db.Model):
     profile_pic_url = db.Column(db.String(50), nullable=True)
     birthday = db.Column(db.DateTime, nullable=False)
     score = db.Column(db.Float, nullable=False, default=0)
-    fiscal_code = db.Column(db.String(20), nullable=True)
+    fiscal_code = db.Column(db.String(20), nullable=False)
+    address = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
 
-
-class UserSchema(ModelSchema):
-    class Meta:
-        model = User
-        sql_session = db.session
-
-
-class PerformerSchema(ModelSchema):
-    class Meta:
-        model = Performer
-        sql_session = db.session
+    def update(self,jsonInfo):
+        if jsonInfo.get('email'):
+            user = User.query.get(self.user_id)
+            user.email = jsonInfo.get('email')
+        for key, value in jsonInfo.iteritems():
+            setattr(self, key, value)
+        db.session.commit()
 
 
 class CustomerSchema(ModelSchema):
@@ -89,8 +110,6 @@ class JobSchema(ModelSchema):
     class Meta:
         model = Job
         sql_session = db.session
-
-
 
 
 class Transaction (db.Model):
