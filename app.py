@@ -8,7 +8,7 @@ from flask_bcrypt import Bcrypt
 import os
 import sqlite3
 
-#steven
+# steven
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'sssdhgclshfsh;shd;jshjhsjhjhsjldchljk'
@@ -20,7 +20,9 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 bcrypt = Bcrypt(app)
 
-from models import User, Performer, Customer, UserSchema, PerformerSchema, CustomerSchema, Job, JobSchema, Message, MessageSchema
+#<<<<<<< HEAD
+from models import User, Performer, Customer, UserSchema, PerformerSchema, CustomerSchema, Job, JobSchema, Message, MessageSchema, Transaction, TransactionSchema
+
 
 db.create_all()
 db.session.commit()
@@ -30,6 +32,7 @@ db.session.commit()
 def home():
     return '<h1>Hello World!</h1>'
 
+
 #############
 #### USERS
 
@@ -37,20 +40,30 @@ def home():
 def users():
     if request.method == 'POST':
         print(request.json)
+
         email = request.json.get('email')
         password_hash = bcrypt.generate_password_hash(request.json.get('password')).encode('utf-8')
         role = request.json.get('role')
+        name = request.json.get('name')
+        fiscal_code = request.json.get('fiscal_code')
+        address = request.json.get('address')
+        birthday = request.json.get('birthday')
+
         newuser = User(email=email, password=password_hash, role=role)
         db.session.add(newuser)
         db.session.commit()
-        print(newuser.id)
-        name = request.json.get('name')
+
         if role == 'Performer':
-            newperformer = Performer(email=email, user=newuser, name=name)
+
+            category = request.json.get('category')
+            genre = request.json.get('genre')
+            cost_per_hour = request.json.get('cost_per_hour')
+            newperformer = Performer(email=email, user=newuser, name=name, category=category, genre=genre, birthday=birthday,
+                                     cost_per_hour=cost_per_hour,fiscal_code=fiscal_code, address=address)
             db.session.add(newperformer)
         if role == 'Customer':
-            newcustomer = Customer(email=email, user_id=newuser.id, name=name)
-            newuser.customer_id = newcustomer.id
+            newcustomer = Customer(email=email, user=newuser, name=name, birthday=birthday,
+                                   fiscal_code=fiscal_code, address=address)
             db.session.add(newcustomer)
         db.session.commit()
         user_schema = UserSchema()
@@ -70,14 +83,26 @@ def performer(id_performer):
     performer_schema = PerformerSchema()
     if request.method == 'GET':
         performer_output = performer_schema.dump(performer_query).data
-        print("passei no GET")
     elif request.method == 'PUT':
-        pass
+        performer_query.update(request.json)
     elif request.method == 'DEL':
         performer_output = performer_schema.dump(performer_query).data
         performer_query.delete()
         db.session.commit()
     return jsonify(performer_output)
+
+@app.route('/search/', methods=['GET'])
+def search():
+    category = request.json.get('category')
+    genre = request.json.get('genre')
+    cost_minimum = request.json.get('cost_minimum')
+    cost_max = request.json.get('cost_max')
+    city = request.json.get('city')
+    performers_query = Performer.query.filter_by(category=category, genre=genre, city=city).filter(cost_minimum < Performer.cost_per_hour < cost_max).all()
+    performer_schema = PerformerSchema(many=True)
+    performers_output = performer_schema.dump(performers_query).data
+    return jsonify(performers_output)
+
 
 @app.route('/consumer/', methods=['GET'])
 def consumers():
@@ -96,7 +121,7 @@ def customer(id_customer):
         customer_output = customer_schema.dump(customer_query).data
 
     elif request.method == 'PUT':
-        pass
+        customer_query.update(request.json)
     elif request.method == 'DEL':
         customer_output = customer_schema.dump(customer_query).data
         customer_query.delete()
@@ -124,6 +149,8 @@ def login():
 
 #         return logged user and info?
 
+
+#HERE IS THE JOB CRUD
 @app.route('/create_job/', methods=["POST"])
 def create_job():
     customer_id = request.json.get('customer_id')
@@ -133,17 +160,17 @@ def create_job():
     date = request.json.get('date')
     address = request.json.get('address')
     price_per_hour = request.json.get('price_per_hour')
-    #id = 2
-    #customer_id = 1
-    #performer_id = 1
-    #hours_booked = 5.0
-    #start_time = datetime.now()
-    #date = datetime.now()
-    #address = "Arena Xangpau"
-    #price_per_hour = 85.0
+    # id = 2
+    # customer_id = 1
+    # performer_id = 1
+    # hours_booked = 5.0
+    # start_time = datetime.now()
+    # date = datetime.now()
+    # address = "Arena Corinthians"
+    # price_per_hour = 85.0
 
-
-    addedjob = Job(id=id,customer_id = customer_id,performer_id = performer_id, hours_booked=hours_booked, start_time=start_time, date=date, address=address,price_per_hour=price_per_hour)
+    addedjob = Job(customer_id=customer_id, performer_id=performer_id, hours_booked=hours_booked,
+                   start_time=start_time, date=date, address=address, price_per_hour=price_per_hour)
     db.session.add(addedjob)
     db.session.commit()
 
@@ -154,24 +181,26 @@ def create_job():
 
 @app.route('/performer/my_jobs/', methods=["GET", "POST"])
 def list_jobs_performer():
-    user_jobs = Job.query.all()
-    #user_jobs = Job.query.filter_by(performer_id = request.json.get('performer_id'))
+    #user_jobs = Job.query.all()
+    user_jobs = Job.query.get(request.json.get('performer_id'))
     job_schema = JobSchema(many=True)
     job_output = job_schema.dump(user_jobs).data
-    return jsonify({'your jobs are' : job_output})
+    return jsonify({'your jobs are': job_output})
+
 
 @app.route('/customer/my_jobs/', methods=["GET", "POST"])
 def list_jobs_customer():
-    user_jobs = Job.query.all()
-    #user_jobs = Job.query.filter_by(customer_id = request.json.get('customer_id'))
+    #user_jobs = Job.query.all()
+    user_jobs = Job.query.get(request.json.get('customer_id'))
+    #still need to figure out how the filter works
     job_schema = JobSchema(many=True)
     job_output = job_schema.dump(user_jobs).data
-    return jsonify({'your jobs are' : job_output})
+    return jsonify({'your jobs are': job_output})
 
 @app.route('/delete_job/', methods=["POST"])
 def delete_job():
     id = request.json.get('id')
-    job = Job.query.filter_by(id = id)
+    job = Job.query.get(id)
     db.session.delete(job)
     db.session.commit()
     return "Job was deleted!"
@@ -181,8 +210,8 @@ def update_job():
     id = request.json.get('id')
     type = request.json.get('type')
     value = request.json.get('value')
-    job = Job.query.filter_by(id=id)
-    setattr(job,type,value)
+    job = Job.query.get(id)
+    setattr(job, type, value)
     db.session.commit()
 
 #front end sends job_id, by requesting jobs from user
@@ -192,8 +221,8 @@ def show_job_messages():
     job_id = request.json.get('job_id')
     messages = Message.query.filter_by(job_id=job_id)
     messages_schema = MessageSchema(many=True)      # initialize message schema, receives list of object (many=true)
-    messages_output = messages_schema.dump(messags_query).data  #Schema is an instruction for Marshmallow
-    jsonify()
+    messages_output = messages_schema.dump(messages).data  #Schema is an instruction for Marshmallow
+    return jsonify(messages_output)
 
 
     #create new messages
@@ -226,33 +255,7 @@ def show_job_messages():
 
 
 
-#showperformer/chats
-@app.route('/shows_chats/', methods=['POST'])
-def show_chats():
-    if request == 'POSTS':
-        id = request.json.get('id')
-        job_id = request.json.get('job_id')
-        customer_id = request.json.get('customer_id')
-        performer_id = request.json.get('performer_id')
-        sender_id = request.json.get('id')
 
-
-#performer opens messages
-@app.route('/opening_messages/', methods=['GET'])
-def openingmessages():
-    messages_query = Message.query.all()
-
-    performer_schema = PerformerSchema()
-    if request.method == 'GET':
-        performer_output = performer_schema.dump(performer_query).data
-        print("passei no GET")
-    elif request.method == 'PUT':
-        pass
-    elif request.method == 'DEL':
-        performer_output = performer_schema.dump(performer_query).data
-        performer_query.delete()
-        db.session.commit()
-    return jsonify(performer_output)
 
 
 
@@ -269,96 +272,58 @@ def openingmessages():
 
 
 
+#HERE IS THE TRANSACTION CRUD
+@app.route('/transaction/', methods=["POST"])
+def create_transaction():
+    value = request.json.get('value')
+    code = request.json.get('code')
+    new_transaction = Transaction(value=value, code=code)
+    db.session.add(new_transaction)
+    db.session.commit()
+
+    transaction_schema = TransactionSchema()
+    output = transaction_schema.dump(new_transaction).data
+    return jsonify(output)
 
 
+@app.route('/performer/my_jobs/', methods=["GET", "POST"])
+def list_transactions_performer():
+    #user_transactions = Transaction.query.all()
+    user_transactions = Transaction.query.get(request.json.get('performer_id'))
+    transaction_schema = TransactionSchema(many=True)
+    transaction_output = transaction_schema.dump(user_transactions).data
+    return jsonify({'your transactions are': transaction_output})
 
 
+@app.route('/customer/my_jobs/', methods=["GET", "POST"])
+def list_transactions_customer():
+    #user_transactions = Transaction.query.all()
+    user_transactions = Transaction.query.get(request.json.get('customer_id'))
+    transaction_schema = TransactionSchema(many=True)
+    transaction_output = transaction_schema.dump(user_transactions).data
+    return jsonify({'your transactions are': transaction_output})
+
+
+@app.route('/delete_transaction/', methods=["POST"])
+def delete_transaction():
+    id = request.json.get('id')
+    transaction = Transaction.query.get(id)
+    db.session.delete(transaction)
+    db.session.commit()
+    return "The desired transaction was deleted!"
+
+
+@app.route('/update_transaction/', methods=["POST"])
+def update_job():
+    id = request.json.get('id')
+    type = request.json.get('type')
+    value = request.json.get('value')
+    transaction = Transaction.query.get(id)
+    setattr(transaction, type, value)
+    transaction.updated_at = datetime.now()
+    db.session.commit()
+    return "The transaction was updated!"
 
 
 if __name__ == '__main__':
     app.run()
-
-# from sqlathanor import FlaskBaseModel, initialize_flask_sqlathanor
-# from flask import Flask, jsonify, request, session
-# from flask_sqlalchemy import SQLAlchemy
-# from flask_bcrypt import Bcrypt
-#
-# import os
-# import sqlite3
-#
-# app = Flask(__name__)
-# app.config['SECRET_KEY'] = 'sssdhgclshfsh;shd;jshjhsjhjhsjldchljk'
-#
-# THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-# my_file = os.path.join(THIS_FOLDER, 'website.db')
-# app.config['SQLALCHEMY_DATABASE_URI'] = my_file
-#
-# db = SQLAlchemy(app, model_class=FlaskBaseModel)
-# db = initialize_flask_sqlathanor(db)
-# bcrypt = Bcrypt(app)
-#
-# from models import User, Performer, Customer
-#
-# db.create_all()
-# db.session.commit()
-#
-# @app.route('/',methods=['GET'])  # Root of your web platform
-# def home():
-#     return '<h1>Hello World!</h1>'
-#
-#
-#
-# ################# USERS
-#
-# @app.route('/user/',methods=['GET','POST'])
-# def users():
-#     if request.method == 'POST':
-#         print(request.json)
-#         email = request.json.get('email')
-#         password_hash = bcrypt.generate_password_hash(request.json.get('password')).encode('utf-8')
-#         role = request.json.get('role')
-#         newuser = User(email=email, password=password_hash, role=role)
-#         db.session.add(newuser)
-#         db.session.commit()
-#         print(newuser.id)
-#         name = request.json.get('name')
-#         if role == 'Performer':
-#             newperformer = Performer(email=email, user_id=newuser.id, name=name)
-#             # newuser.performer_id = newperformer.id
-#             db.session.add(newperformer)
-#         if role == 'Customer':
-#             newcustomer = Customer(email=email, user_id=newuser.id, name=name)
-#             # newuser.customer_id = newcustomer.id
-#             db.session.add(newcustomer)
-#         db.session.commit()
-#         return User.to_json(newuser)
-#
-# @app.route('/performers/', methods=['GET'])
-# def performers():
-#     performers = Performer.query.all()
-#     return jsonify(performers)
-#
-# @app.route('/consumers/', methods=['GET'])
-# def all_consumer():
-#     customers = Customer.query.all()
-#     return jsonify(customers)
-#
-# @app.route('/restartdb/',methods=['GET'])
-# def restart():
-#     User.query.delete()
-#     Performer.query.delete()
-#     Customer.query.delete()
-#
-# @app.route('/login/',methods=['POST'])
-# def login():
-#     email = request.json.get('email')
-#     password = request.json.get('password')
-#     user = User.query.filter_by(email=email).first()
-#     if bcrypt.check_password_hash(user.password,password):
-#         print('logged in')
-#         session["user_id"] = user.id
-#         session["role"] = user.role
-# #         return logged user and info?
-#
-# if __name__ == '__main__':
-#     app.run()
