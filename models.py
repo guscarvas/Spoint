@@ -67,6 +67,20 @@ class CustomerSchema(ModelSchema):
         model = Customer
         sql_session = db.session
 
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+    performer_id = db.Column(db.Integer, db.ForeignKey('performer.id', nullable=False))
+    job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
+    sender = db.Column(db.String(10), nullable=False)
+    content = db.Column(db.String(200), nullable=False)
+
+class MessageSchema(ModelSchema):
+    class Meta:
+        model = Message
+        sql_session = db.session
 
 class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True)

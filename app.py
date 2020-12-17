@@ -20,7 +20,7 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 bcrypt = Bcrypt(app)
 
-from models import User, Performer, Customer, UserSchema, PerformerSchema, CustomerSchema, Job, JobSchema
+from models import User, Performer, Customer, UserSchema, PerformerSchema, CustomerSchema, Job, JobSchema, Message, MessageSchema
 
 db.create_all()
 db.session.commit()
@@ -57,14 +57,12 @@ def users():
         output = user_schema.dump(newuser).data
         return jsonify(output)
 
-
 @app.route('/performer/', methods=['GET'])
 def performers():
     performers_query = Performer.query.all()
     performer_schema = PerformerSchema(many=True)
     performers_output = performer_schema.dump(performers_query).data
     return jsonify(performers_output)
-
 
 @app.route('/performer/<int:id_performer>', methods=['GET', 'PUT', 'DEL'])
 def performer(id_performer):
@@ -80,7 +78,6 @@ def performer(id_performer):
         performer_query.delete()
         db.session.commit()
     return jsonify(performer_output)
-
 
 @app.route('/consumer/', methods=['GET'])
 def consumers():
@@ -171,10 +168,6 @@ def list_jobs_customer():
     job_output = job_schema.dump(user_jobs).data
     return jsonify({'your jobs are' : job_output})
 
-
-
-
-
 @app.route('/delete_job/', methods=["POST"])
 def delete_job():
     id = request.json.get('id')
@@ -182,7 +175,6 @@ def delete_job():
     db.session.delete(job)
     db.session.commit()
     return "Job was deleted!"
-
 
 @app.route('/update_job/', methods=["POST"])
 def update_job():
@@ -193,8 +185,87 @@ def update_job():
     setattr(job,type,value)
     db.session.commit()
 
+#front end sends job_id, by requesting jobs from user
+
+@app.route('/show_job_messages', methods=['POST'])
+def show_job_messages():
+    job_id = request.json.get('job_id')
+    messages = Message.query.filter_by(job_id=job_id)
+    messages_schema = MessageSchema(many=True)      # initialize message schema, receives list of object (many=true)
+    messages_output = messages_schema.dump(messags_query).data  #Schema is an instruction for Marshmallow
+    jsonify()
 
 
+    #create new messages
+    #shows all the messages
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#showperformer/chats
+@app.route('/shows_chats/', methods=['POST'])
+def show_chats():
+    if request == 'POSTS':
+        id = request.json.get('id')
+        job_id = request.json.get('job_id')
+        customer_id = request.json.get('customer_id')
+        performer_id = request.json.get('performer_id')
+        sender_id = request.json.get('id')
+
+
+#performer opens messages
+@app.route('/opening_messages/', methods=['GET'])
+def openingmessages():
+    messages_query = Message.query.all()
+
+    performer_schema = PerformerSchema()
+    if request.method == 'GET':
+        performer_output = performer_schema.dump(performer_query).data
+        print("passei no GET")
+    elif request.method == 'PUT':
+        pass
+    elif request.method == 'DEL':
+        performer_output = performer_schema.dump(performer_query).data
+        performer_query.delete()
+        db.session.commit()
+    return jsonify(performer_output)
+
+
+
+
+
+
+#showcustomer/chats
+
+#send message
+
+#show_a_conversation
+
+#delete chat
 
 
 
