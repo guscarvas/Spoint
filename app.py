@@ -215,8 +215,11 @@ def update_job():
     db.session.commit()
 
 #front end sends job_id, by requesting jobs from user
+# get request asking for information (no changes)
+# Post request; creating something
+# Del request: Deleting in database
 
-@app.route('/show_job_messages', methods=['POST'])
+@app.route('/show_job_messages/', methods=['GET'])
 def show_job_messages():
     job_id = request.json.get('job_id')
     messages = Message.query.filter_by(job_id=job_id)
@@ -224,6 +227,19 @@ def show_job_messages():
     messages_output = messages_schema.dump(messages).data  #Schema is an instruction for Marshmallow
     return jsonify(messages_output)
 
+@app.route('/create_message/', methods=['POST'])
+def create_message():
+    customer_id = request.json.get('customer_id')
+    performer_id = request.json.get('performer_id')
+    job_id = request.json.get('job_id')
+    content = request.json.get('content')
+    sender = request.json.get('sender')
+    added_message = Message(customer_id=customer_id, performer_id=performer_id, job_id=job_id, content=content, sender=sender)
+    db.session.add(added_message)
+    db.session.commit()
+    messages_schema = MessageSchema()
+    output = messages_schema.dump(added_message).data
+    return jsonify(output)
 
     #create new messages
     #shows all the messages
