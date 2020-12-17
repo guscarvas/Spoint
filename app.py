@@ -45,6 +45,7 @@ def users():
         name = request.json.get('name')
         fiscal_code = request.json.get('fiscal_code')
         address = request.json.get('address')
+        birthday = request.json.get('birthday')
 
         newuser = User(email=email, password=password_hash, role=role)
         db.session.add(newuser)
@@ -54,7 +55,6 @@ def users():
 
             category = request.json.get('category')
             genre = request.json.get('genre')
-            birthday = request.json.get('birthday')
             cost_per_hour = request.json.get('cost_per_hour')
             newperformer = Performer(email=email, user=newuser, name=name, category=category, genre=genre, birthday=birthday,
                                      cost_per_hour=cost_per_hour,fiscal_code=fiscal_code, address=address)
@@ -62,7 +62,6 @@ def users():
         if role == 'Customer':
             newcustomer = Customer(email=email, user=newuser, name=name, birthday=birthday,
                                    fiscal_code=fiscal_code, address=address)
-            newuser.customer_id = newcustomer.id
             db.session.add(newcustomer)
         db.session.commit()
         user_schema = UserSchema()

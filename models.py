@@ -99,12 +99,14 @@ class Job(db.Model):
     performer_score = db.Column(db.Float, nullable=False, default=0)
     date = db.Column(db.DateTime, nullable=False)
     # customer_score =
-    # status =
+
     price_per_hour = db.Column(db.Float, nullable=False)
     address = db.Column(db.String(80), nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
 
+    status =  db.Column(db.String(20), nullable=False, default=0)
+    # Status will be one of these options: 'Pending', 'Accepted', 'Finished' and maybe 'Reviewed'? Don't know yet
 
 class JobSchema(ModelSchema):
     class Meta:
