@@ -42,6 +42,7 @@ class Performer(db.Model):
     money = db.Column(db.Float, nullable=False, default=0)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
+    job = db.relationship('Job', backref='performer', lazy=True)
 
     def update(self,jsonInfo):
         if jsonInfo.get('email'):
@@ -73,6 +74,7 @@ class Customer(db.Model):
     address = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
+    job = db.relationship('Job', backref='customer', lazy=True)
 
     def update(self,jsonInfo):
         if jsonInfo.get('email'):
@@ -93,7 +95,7 @@ class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     #customer_id = db.Column(db.Integer)
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False )
-    performer_id = db.Column(db.Integer, db.ForeignKey('performer.id'))
+    performer_id = db.Column(db.Integer, db.ForeignKey('performer.id'), nullable=False)
     hours_booked = db.Column(db.Float, nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
     performer_score = db.Column(db.Float, nullable=False, default=0)

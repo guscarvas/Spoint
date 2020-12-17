@@ -171,7 +171,7 @@ def create_job():
     # address = "Arena Corinthians"
     # price_per_hour = 85.0
 
-    addedjob = Job(id=id, customer_id=customer_id, performer_id=performer_id, hours_booked=hours_booked,
+    addedjob = Job(customer_id=customer_id, performer_id=performer_id, hours_booked=hours_booked,
                    start_time=start_time, date=date, address=address, price_per_hour=price_per_hour)
     db.session.add(addedjob)
     db.session.commit()
@@ -183,8 +183,8 @@ def create_job():
 
 @app.route('/performer/my_jobs/', methods=["GET", "POST"])
 def list_jobs_performer():
-    user_jobs = Job.query.all()
-    # user_jobs = Job.query.filter_by(performer_id = request.json.get('performer_id'))
+    #user_jobs = Job.query.all()
+    user_jobs = Job.query.get(request.json.get('performer_id'))
     job_schema = JobSchema(many=True)
     job_output = job_schema.dump(user_jobs).data
     return jsonify({'your jobs are': job_output})
@@ -192,8 +192,8 @@ def list_jobs_performer():
 
 @app.route('/customer/my_jobs/', methods=["GET", "POST"])
 def list_jobs_customer():
-    user_jobs = Job.query.all()
-    # user_jobs = Job.query.filter_by(customer_id = request.json.get('customer_id'))
+    #user_jobs = Job.query.all()
+    user_jobs = Job.query.get(request.json.get('customer_id'))
     #still need to figure out how the filter works
     job_schema = JobSchema(many=True)
     job_output = job_schema.dump(user_jobs).data
@@ -203,7 +203,7 @@ def list_jobs_customer():
 @app.route('/delete_job/', methods=["POST"])
 def delete_job():
     id = request.json.get('id')
-    job = Job.query.filter_by(id=id)
+    job = Job.query.get(id)
     db.session.delete(job)
     db.session.commit()
     return "Job was deleted!"
@@ -214,7 +214,7 @@ def update_job():
     id = request.json.get('id')
     type = request.json.get('type')
     value = request.json.get('value')
-    job = Job.query.filter_by(id=id)
+    job = Job.query.get(id)
     setattr(job, type, value)
     db.session.commit()
 
@@ -239,8 +239,8 @@ def create_transaction():
 
 @app.route('/performer/my_jobs/', methods=["GET", "POST"])
 def list_transactions_performer():
-    user_transactions = Transaction.query.all()
-    # user_transactions = Transaction.query.filter_by(performer_id = request.json.get('performer_id'))
+    #user_transactions = Transaction.query.all()
+    user_transactions = Transaction.query.get(request.json.get('performer_id'))
     transaction_schema = TransactionSchema(many=True)
     transaction_output = transaction_schema.dump(user_transactions).data
     return jsonify({'your transactions are': transaction_output})
@@ -248,8 +248,8 @@ def list_transactions_performer():
 
 @app.route('/customer/my_jobs/', methods=["GET", "POST"])
 def list_transactions_customer():
-    user_transactions = Transaction.query.all()
-    # user_transactions = Transaction.query.filter_by(customer_id = request.json.get('customer_id'))
+    #user_transactions = Transaction.query.all()
+    user_transactions = Transaction.query.get(request.json.get('customer_id'))
     transaction_schema = TransactionSchema(many=True)
     transaction_output = transaction_schema.dump(user_transactions).data
     return jsonify({'your transactions are': transaction_output})
@@ -258,7 +258,7 @@ def list_transactions_customer():
 @app.route('/delete_transaction/', methods=["POST"])
 def delete_transaction():
     id = request.json.get('id')
-    transaction = Transaction.query.filter_by(id=id)
+    transaction = Transaction.query.get(id)
     db.session.delete(transaction)
     db.session.commit()
     return "The desired transaction was deleted!"
@@ -269,7 +269,7 @@ def update_job():
     id = request.json.get('id')
     type = request.json.get('type')
     value = request.json.get('value')
-    transaction = Transaction.query.filter_by(id=id)
+    transaction = Transaction.query.get(id)
     setattr(transaction, type, value)
     transaction.updated_at = datetime.now()
     db.session.commit()
