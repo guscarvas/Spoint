@@ -84,7 +84,6 @@ class Customer(db.Model):
             setattr(self, key, value)
         db.session.commit()
 
-
 class CustomerSchema(ModelSchema):
     class Meta:
         model = Customer
@@ -140,4 +139,18 @@ class Transaction (db.Model):
 class TransactionSchema(ModelSchema):
     class Meta:
         model = Transaction
+        sql_session = db.session
+
+class Report(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+    performer_id = db.Column(db.Integer, db.ForeignKey('performer.id', nullable=False))
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
+    content = db.Column(db.String(200), nullable=False)
+    sender = db.Column(db.String(10), nullable=False)
+
+class ReportSchema(ModelSchema):
+    class Meta:
+        model = Report
         sql_session = db.session

@@ -21,7 +21,7 @@ ma = Marshmallow(app)
 bcrypt = Bcrypt(app)
 
 #<<<<<<< HEAD
-from models import User, Performer, Customer, UserSchema, PerformerSchema, CustomerSchema, Job, JobSchema, Message, MessageSchema, Transaction, TransactionSchema
+from models import User, Performer, Customer, UserSchema, PerformerSchema, CustomerSchema, Job, JobSchema, Message, MessageSchema, Transaction, TransactionSchema, Report, ReportSchema
 
 
 db.create_all()
@@ -241,51 +241,26 @@ def create_message():
     output = messages_schema.dump(added_message).data
     return jsonify(output)
 
-    #create new messages
-    #shows all the messages
+@app.route('/show_reports/', methods=['GET'])
+def show_reports():
+    user_id = request.json.get('user_id') #or filter with customer id and performer id??????
+    reports = Report.query.filter_by(user_id=user_id)
+    reports_schema = ReportSchema(many=True)
+    reports_output = reports_schema.dump(reports).data
+    return jsonify(reports_output)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#showcustomer/chats
-
-#send message
-
-#show_a_conversation
-
-#delete chat
-
+@app.route('/create_report/', methods=['POST'])
+def create_report():
+    customer_id = request.json.get('customer_id')
+    performer_id = request.json.get('performer_id')
+    content = request.json.get('content')
+    sender = request.json.get('sender')
+    added_report = Message(customer_id=customer_id, performer_id=performer_id, content=content, sender=sender)
+    db.session.add(added_report)
+    db.session.commit()
+    messages_schema = MessageSchema()
+    output = messages_schema.dump(added_report).data
+    return jsonify(output)
 
 
 #HERE IS THE TRANSACTION CRUD
