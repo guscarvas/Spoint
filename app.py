@@ -20,7 +20,6 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 bcrypt = Bcrypt(app)
 
-#<<<<<<< HEAD
 from models import User, Performer, Customer, UserSchema, PerformerSchema, CustomerSchema, Job, JobSchema, Message, MessageSchema, Transaction, TransactionSchema, Report, ReportSchema
 
 
@@ -85,6 +84,7 @@ def performer(id_performer):
         performer_output = performer_schema.dump(performer_query).data
     elif request.method == 'PUT':
         performer_query.update(request.json)
+        performer_output = performer_schema.dump(performer_query).data
     elif request.method == 'DEL':
         performer_output = performer_schema.dump(performer_query).data
         performer_query.delete()
@@ -104,13 +104,12 @@ def search():
     return jsonify(performers_output)
 
 
-@app.route('/consumer/', methods=['GET'])
-def consumers():
-    customers = Customer.query.all()
+@app.route('/customer/', methods=['GET'])
+def customers():
     customers_query = Customer.query.all()
     customer_schema = CustomerSchema(many=True)
-    performers_output = customer_schema.dump(customers_query).data
-    return jsonify(performers_output)
+    customers_output = customer_schema.dump(customers_query).data
+    return jsonify(customers_output)
 
 
 @app.route('/customer/<int:id_customer>', methods=['GET', 'PUT', 'DEL'])
