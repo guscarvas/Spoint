@@ -63,13 +63,15 @@ def users():
             newperformer = Performer(email=email, user=newuser, name=name, category=category, genre=genre, birthday=birthday,
                                      cost_per_hour=cost_per_hour,fiscal_code=fiscal_code, address=address, search_city=search_city)
             db.session.add(newperformer)
+            performer_schema = PerformerSchema()
+            output = performer_schema.dump(newperformer).data
         if role == 'Customer':
             newcustomer = Customer(email=email, user=newuser, name=name, birthday=birthday,
                                    fiscal_code=fiscal_code, address=address)
             db.session.add(newcustomer)
+            customer_schema = CustomerSchema()
+            output = customer_schema.dump(newcustomer).data
         db.session.commit()
-        user_schema = UserSchema()
-        output = user_schema.dump(newuser).data
         return jsonify(output)
 
 @app.route('/performer/', methods=['GET'])
@@ -105,7 +107,8 @@ def search():
     performers_query = performers_query.filter(Performer.cost_per_hour > cost_minimum).filter(Performer.cost_per_hour < cost_max).all()
     performer_schema = PerformerSchema(many=True)
     performers_output = performer_schema.dump(performers_query).data
-    return jsonify(performers_output)
+    return jsonify({'performers': performers_output})
+
 
 
 @app.route('/customer/', methods=['GET'])
@@ -162,10 +165,6 @@ def login():
         return "Log in failed"
 
 
-#         return logged user and info?
-
-
-#HERE IS THE JOB CRUD
 @app.route('/job/', methods=["POST"])
 def create_job():
     email = request.json.get('email')
@@ -181,19 +180,18 @@ def create_job():
             performer_id = request.json.get('performer_id')
             performer_query = Performer.query.get(performer_id)
 
+            title = request.json.get('title')
             start_time = request.json.get('start_time')
-            start_time = datetime.strptime(start_time, '%H:%M')
+            start_time = datetime.strptime(start_time, '%Y-%m-%d, %H:%M')
             end_time = request.json.get('end_time')
-            end_time = datetime.strptime(end_time, '%H:%M')
+            end_time = datetime.strptime(end_time, '%Y-%m-%d, %H:%M')
 
-            date = request.json.get('date')
-            date = datetime.strptime(date, '%d-%m-%Y')
             address = request.json.get('address')
             price_per_hour = request.json.get('price_per_hour')
 
 
-            addedjob = Job(customer=customer_query, performer=performer_query, end_time=end_time,
-                           start_time=start_time, date=date, address=address, price_per_hour=price_per_hour)
+            addedjob = Job(customer=customer_query, performer=performer_query, performer_name=performer_query.name, customer_name=customer_query.name,
+                           title=title, end_time=end_time,start_time=start_time, address=address, price_per_hour=price_per_hour)
             db.session.add(addedjob)
             db.session.commit()
 
@@ -225,29 +223,6 @@ def list_jobs():
 
     return jsonify({'your jobs are': job_output})
 
-
-@app.route('/performer/my_jobs/', methods=["GET"])
-def list_jobs_performer():
-    #user_jobs = Job.query.all()
-
-    performer = Performer.query.get(request.json.get('performer_id'))
-    user_jobs = Job.query.filter_by(performer=performer)
-    job_schema = JobSchema(many=True)
-    job_output = job_schema.dump(user_jobs).data
-    return jsonify({'your jobs are': job_output})
-
-
-@app.route('/customer/my_jobs/', methods=["GET", "POST"])
-def list_jobs_customer():
-    #user_jobs = Job.query.all()
-    customer = Customer.query.get(request.json.get('customer_id'))
-    user_jobs = Job.query.filter_by(customer=customer)
-    #still need to figure out how the filter works
-    job_schema = JobSchema(many=True)
-    job_output = job_schema.dump(user_jobs).data
-    return jsonify({'your jobs are': job_output})
-
-
 @app.route('/delete_job/', methods=["POST"])
 def delete_job():
     id = request.json.get('id')
@@ -256,14 +231,17 @@ def delete_job():
     db.session.commit()
     return "Job was deleted!"
 
-@app.route('/update_job/', methods=["POST"])
+@app.route('/update_job/', methods=["PATCH"])
 def update_job():
-    id = request.json.get('id')
-    type = request.json.get('type')
-    value = request.json.get('value')
-    job = Job.query.get(id)
-    setattr(job, type, value)
+
+    job_id = request.json.get('job_id')
+    status = request.json.get('status')
+
+    job_query = Job.query.get(job_id)
+    job_query.status = status
+
     db.session.commit()
+    return "Updated"
 
 #front end sends job_id, by requesting jobs from user
 # get request asking for information (no changes)
