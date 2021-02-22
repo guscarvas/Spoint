@@ -65,14 +65,15 @@ class Job(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
     performer_id = db.Column(db.Integer, db.ForeignKey('performer.id'))
 
-    hours_booked = db.Column(db.Float, nullable=False)
+    title = db.Column(db.String(200), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
     performer_score = db.Column(db.Float, nullable=False, default=0)
-    date = db.Column(db.DateTime, nullable=False)
+
     # customer_score =
 
     price_per_hour = db.Column(db.Float, nullable=False)
-    address = db.Column(db.String(80), nullable=False)
+    address = db.Column(db.String(200), nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
 

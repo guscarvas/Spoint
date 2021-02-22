@@ -147,7 +147,6 @@ def login():
     if user == None:
         return "Incorrect email"
     if bcrypt.check_password_hash(user.password, password):
-        print('logged in')
         session["user_id"] = user.id
         session["role"] = user.role
         if user.performer:
@@ -167,30 +166,64 @@ def login():
 
 
 #HERE IS THE JOB CRUD
-@app.route('/create_job/', methods=["POST"])
+@app.route('/job/', methods=["POST"])
 def create_job():
-    customer_id = request.json.get('customer_id')
-    customer_query = Customer.query.get(customer_id)
-    performer_id = request.json.get('performer_id')
-    performer_query = Performer.query.get(performer_id)
-    hours_booked = request.json.get('hours_booked')
-    start_time = request.json.get('start_time')
-    start_time = datetime.strptime(start_time, '%H:%M')
+    email = request.json.get('email')
+    password = request.json.get('password')
+    user = User.query.filter_by(email=email).first()
+    if user == None:
+        return "Incorrect email"
 
-    date = request.json.get('date')
-    date = datetime.strptime(date, '%d-%m-%Y')
-    address = request.json.get('address')
-    price_per_hour = request.json.get('price_per_hour')
+    if bcrypt.check_password_hash(user.password, password):
+        if user.customer:
+            customer_id = request.json.get('customer_id')
+            customer_query = Customer.query.get(customer_id)
+            performer_id = request.json.get('performer_id')
+            performer_query = Performer.query.get(performer_id)
+
+            start_time = request.json.get('start_time')
+            start_time = datetime.strptime(start_time, '%H:%M')
+            end_time = request.json.get('end_time')
+            end_time = datetime.strptime(end_time, '%H:%M')
+
+            date = request.json.get('date')
+            date = datetime.strptime(date, '%d-%m-%Y')
+            address = request.json.get('address')
+            price_per_hour = request.json.get('price_per_hour')
 
 
-    addedjob = Job(customer=customer_query, performer=performer_query, hours_booked=hours_booked,
-                   start_time=start_time, date=date, address=address, price_per_hour=price_per_hour)
-    db.session.add(addedjob)
-    db.session.commit()
+            addedjob = Job(customer=customer_query, performer=performer_query, end_time=end_time,
+                           start_time=start_time, date=date, address=address, price_per_hour=price_per_hour)
+            db.session.add(addedjob)
+            db.session.commit()
 
-    job_schema = JobSchema()
-    output = job_schema.dump(addedjob).data
-    return jsonify(output)
+            job_schema = JobSchema()
+            output = job_schema.dump(addedjob).data
+            return jsonify(output)
+
+
+@app.route('/my_jobs/', methods=["GET"])
+def list_jobs():
+
+    email = request.json.get('email')
+    password = request.json.get('password')
+    user = User.query.filter_by(email=email).first()
+    if user == None:
+        return "Incorrect email"
+
+    if bcrypt.check_password_hash(user.password, password):
+        if user.performer:
+            user_jobs = Job.query.filter_by(performer=user.performer)
+            job_schema = JobSchema(many=True)
+            job_output = job_schema.dump(user_jobs).data
+        else:
+            user_jobs = Job.query.filter_by(customer=user.customer)
+            job_schema = JobSchema(many=True)
+            job_output = job_schema.dump(user_jobs).data
+    else:
+        return "Invalid credentials"
+
+    return jsonify({'your jobs are': job_output})
 
 
 @app.route('/performer/my_jobs/', methods=["GET"])
