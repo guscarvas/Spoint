@@ -41,6 +41,9 @@ def users():
         print(request.json)
 
         email = request.json.get('email')
+        user = User.query.filter_by(email=email).first()
+        if user:
+            return "This email is already registered"
         password_hash = bcrypt.generate_password_hash(request.json.get('password')).encode('utf-8')
         role = request.json.get('role')
         name = request.json.get('name')
@@ -98,13 +101,31 @@ def performer(id_performer):
 
 @app.route('/search/', methods=['GET'])
 def search():
-    category = request.json.get('category')
-    genre = request.json.get('genre')
-    cost_minimum = request.json.get('cost_minimum')
-    cost_max = request.json.get('cost_max')
-    city = request.json.get('city')
-    performers_query = Performer.query.filter_by(category=category, genre=genre, search_city=city)
-    performers_query = performers_query.filter(Performer.cost_per_hour > cost_minimum).filter(Performer.cost_per_hour < cost_max).all()
+    performers_query = Performer.query
+    if request.json.get('city'):
+        city = request.json.get('city')
+        performers_query = performers_query.filter_by(search_city=city)
+    if request.json.get('category'):
+        category = request.json.get('category')
+        performers_query = performers_query.filter_by(category=category)
+    if request.json.get('genre'):
+        genre = request.json.get('genre')
+        performers_query.filter_by(genre=genre)
+    if request.json.get('cost_minimum'):
+        cost_minimum = request.json.get('cost_minimum')
+        performers_query = performers_query.filter(Performer.cost_per_hour > cost_minimum)
+    if request.json.get('cost_max'):
+        cost_max = request.json.get('cost_max')
+        performers_query.filter(Performer.cost_per_hour > cost_max)
+
+
+
+    # category = request.json.get('category')
+    # genre = request.json.get('genre')
+    # cost_minimum = request.json.get('cost_minimum')
+    # cost_max = request.json.get('cost_max')
+    # performers_query = Performer.query.filter_by(category=category, genre=genre, search_city=city)
+    # performers_query = performers_query.filter(Performer.cost_per_hour > cost_minimum).filter(Performer.cost_per_hour < cost_max).all()
     performer_schema = PerformerSchema(many=True)
     performers_output = performer_schema.dump(performers_query).data
     return jsonify({'performers': performers_output})
