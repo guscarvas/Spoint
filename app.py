@@ -40,7 +40,6 @@ def home():
 @app.route('/user/', methods=['GET', 'POST'])
 def users():
     if request.method == 'POST':
-        print(request.json)
 
         email = request.json.get('email')
         user = User.query.filter_by(email=email).first()
@@ -181,12 +180,19 @@ def login():
         if user.performer:
             performer_schema = PerformerSchema()
             output = performer_schema.dump(user.performer).data
-            return jsonify(output)
+            user_jobs = Job.query.filter_by(performer=user.performer)
+            job_schema = JobSchema(many=True)
+            job_output = job_schema.dump(user_jobs).data
+
         else:
             customer_schema = CustomerSchema()
             output = customer_schema.dump(user.customer).data
-            return jsonify(output)
+            user_jobs = Job.query.filter_by(customer=user.customer)
+            job_schema = JobSchema(many=True)
+            job_output = job_schema.dump(user_jobs).data
 
+        return jsonify({'user': output,
+                        'jobs': job_output})
     else:
         return "Log in failed"
 
