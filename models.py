@@ -25,7 +25,7 @@ class Performer(db.Model):
     cost_per_hour = db.Column(db.Float, nullable=False, default=100)
     genre = db.Column(db.String(120), nullable=False, default="Rock")
     category = db.Column(db.String(120), nullable=False, default="Band")
-    profile_pic_url = db.Column(db.String(100), nullable=True)
+    profile_pic_url = db.Column(db.String(300), nullable=True)
     birthday = db.Column(db.DateTime, nullable=False)
     score = db.Column(db.Float, nullable=False, default=0)
     search_city = db.Column(db.String(30), nullable=False)

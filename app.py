@@ -52,7 +52,9 @@ def users():
         search_city = request.json.get('search_city')
         birthday = request.json.get('birthday')
         birthday = datetime.strptime(birthday, '%d-%m-%Y')
-        print(birthday)
+        profile_pic_url = "ABC"
+        if request.json.get('profile_pic_url'):
+            profile_pic_url = request.json.get('profile_pic_url')
 
         newuser = User(email=email, password=password_hash, role=role)
         db.session.add(newuser)
@@ -64,13 +66,14 @@ def users():
             genre = request.json.get('genre')
             cost_per_hour = request.json.get('cost_per_hour')
             newperformer = Performer(email=email, user=newuser, name=name, category=category, genre=genre, birthday=birthday,
-                                     cost_per_hour=cost_per_hour,fiscal_code=fiscal_code, address=address, search_city=search_city)
+                                     cost_per_hour=cost_per_hour,fiscal_code=fiscal_code, address=address, search_city=search_city,
+                                     profile_pic_url=profile_pic_url)
             db.session.add(newperformer)
             performer_schema = PerformerSchema()
             output = performer_schema.dump(newperformer).data
         if role == 'Customer':
             newcustomer = Customer(email=email, user=newuser, name=name, birthday=birthday,
-                                   fiscal_code=fiscal_code, address=address)
+                                   fiscal_code=fiscal_code, address=address, profile_pic_url=profile_pic_url)
             db.session.add(newcustomer)
             customer_schema = CustomerSchema()
             output = customer_schema.dump(newcustomer).data
