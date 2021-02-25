@@ -58,7 +58,6 @@ def users():
         name = request.json.get('name')
         fiscal_code = request.json.get('fiscal_code')
         address = request.json.get('address')
-        search_city = request.json.get('search_city')
         profile_pic_url = "ABC"
         if request.json.get('profile_pic_url'):
             profile_pic_url = request.json.get('profile_pic_url')
@@ -76,6 +75,7 @@ def users():
             cost_per_hour = request.json.get('cost_per_hour')
             birthday = request.json.get('birthday')
             birthday = datetime.strptime(birthday, '%d-%m-%Y')
+            search_city = request.json.get('search_city')
             newperformer = Performer(email=email, user=newuser, name=name, category=category, genre=genre, birthday=birthday,
                                      cost_per_hour=cost_per_hour,fiscal_code=fiscal_code, address=address, search_city=search_city,
                                      profile_pic_url=profile_pic_url)
