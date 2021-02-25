@@ -20,7 +20,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///website.db'
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 bcrypt = Bcrypt(app)
-CORS(app)
 CORS(app, resources=r'/*', headers='Content-Type')
 
 from models import User, Performer, Customer, UserSchema, PerformerSchema, CustomerSchema, Job, JobSchema, Message, MessageSchema, Transaction, TransactionSchema, Report, ReportSchema
