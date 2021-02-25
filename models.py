@@ -47,7 +47,7 @@ class Customer(db.Model):
 
     name = db.Column(db.String(50), nullable=False)
     profile_pic_url = db.Column(db.String(50), nullable=True)
-    birthday = db.Column(db.DateTime, nullable=False)
+    # birthday = db.Column(db.DateTime, nullable=False)
     score = db.Column(db.Float, nullable=False, default=0)
     fiscal_code = db.Column(db.String(20), nullable=False)
     address = db.Column(db.String(100), nullable=False)

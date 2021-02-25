@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Flask, jsonify, request, session
+from flask import Flask, jsonify, request, session, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_bcrypt import Bcrypt
@@ -41,7 +41,13 @@ def home():
 @app.route('/user/', methods=['GET', 'POST', 'OPTIONS'])
 @cross_origin(allow_headers=['Content-Type'])
 def users():
-    if request.method == 'POST' or request.method == 'OPTIONS':
+    # if request.method == 'OPTIONS':
+    #     response = make_response()
+    #     response.headers.add("Access-Control-Allow-Origin", "*")
+    #     response.headers.add('Access-Control-Allow-Headers', "*")
+    #     response.headers.add('Access-Control-Allow-Methods', "*")
+    #     return response
+    elif request.method == 'POST':
 
         email = request.json.get('email')
         user = User.query.filter_by(email=email).first()
@@ -53,8 +59,8 @@ def users():
         fiscal_code = request.json.get('fiscal_code')
         address = request.json.get('address')
         search_city = request.json.get('search_city')
-        birthday = request.json.get('birthday')
-        birthday = datetime.strptime(birthday, '%d-%m-%Y')
+        # birthday = request.json.get('birthday')
+        # birthday = datetime.strptime(birthday, '%d-%m-%Y')
         profile_pic_url = "ABC"
         if request.json.get('profile_pic_url'):
             profile_pic_url = request.json.get('profile_pic_url')
