@@ -70,7 +70,9 @@ def users():
         if role == 'Performer':
 
             category = request.json.get('category')
-            genre = request.json.get('genre')
+            genre = "None"
+            if request.json.get('genre'):
+                genre = request.json.get('genre')
             cost_per_hour = request.json.get('cost_per_hour')
             birthday = request.json.get('birthday')
             birthday = datetime.strptime(birthday, '%d-%m-%Y')
@@ -81,7 +83,7 @@ def users():
             performer_schema = PerformerSchema()
             output = performer_schema.dump(newperformer).data
         if role == 'Customer':
-            newcustomer = Customer(email=email, user=newuser, name=name, birthday=birthday,
+            newcustomer = Customer(email=email, user=newuser, name=name,
                                    fiscal_code=fiscal_code, address=address, profile_pic_url=profile_pic_url)
             db.session.add(newcustomer)
             customer_schema = CustomerSchema()
@@ -176,6 +178,7 @@ def restart():
 
 
 @app.route('/login/', methods=['POST'])
+@cross_origin(allow_headers=['Content-Type'])
 def login():
     email = request.json.get('email')
     password = request.json.get('password')
@@ -242,6 +245,7 @@ def create_job():
 
 
 @app.route('/my_jobs/', methods=["POST"])
+@cross_origin(allow_headers=['Content-Type'])
 def list_jobs():
 
     email = request.json.get('email')
@@ -264,7 +268,7 @@ def list_jobs():
 
     return jsonify({'your jobs are': job_output})
 
-@app.route('/delete_job/', methods=["GET"])
+@app.route('/delete_job/', methods=["POST"])
 @cross_origin(allow_headers=['Content-Type'])
 def delete_job():
     id = request.json.get('id')
