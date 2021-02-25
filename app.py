@@ -277,7 +277,8 @@ def delete_job():
     db.session.commit()
     return "Job was deleted!"
 
-@app.route('/update_job/', methods=["PATCH"])
+@app.route('/update_job/', methods=["POST"])
+@cross_origin(allow_headers=['Content-Type'])
 def update_job():
 
     job_id = request.json.get('job_id')
