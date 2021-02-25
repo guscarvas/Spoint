@@ -40,7 +40,7 @@ def home():
 @app.route('/user/', methods=['GET', 'POST'])
 @cross_origin(allow_headers=['Content-Type'])
 def users():
-    if request.method == 'GET':
+    if request.method == 'POST':
 
         email = request.json.get('email')
         user = User.query.filter_by(email=email).first()
@@ -104,7 +104,7 @@ def performer(id_performer):
         db.session.commit()
     return jsonify(performer_output)
 
-@app.route('/search/', methods=['GET'])
+@app.route('/search/', methods=['POST'])
 def search():
     performers_query = Performer.query
     if request.json.get('city'):
@@ -168,7 +168,7 @@ def restart():
     Customer.query.delete()
 
 
-@app.route('/login/', methods=['GET'])
+@app.route('/login/', methods=['POST'])
 def login():
     email = request.json.get('email')
     password = request.json.get('password')
@@ -198,7 +198,7 @@ def login():
         return "Log in failed"
 
 
-@app.route('/job/', methods=["GET"])
+@app.route('/job/', methods=["POST"])
 @cross_origin(allow_headers=['Content-Type'])
 def create_job():
     email = request.json.get('email')
@@ -234,7 +234,7 @@ def create_job():
             return jsonify(output)
 
 
-@app.route('/my_jobs/', methods=["GET"])
+@app.route('/my_jobs/', methods=["POST"])
 def list_jobs():
 
     email = request.json.get('email')
