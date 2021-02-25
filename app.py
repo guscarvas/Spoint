@@ -4,7 +4,7 @@ from flask import Flask, jsonify, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_bcrypt import Bcrypt
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 import os
 import sqlite3
@@ -20,7 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///website.db'
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 bcrypt = Bcrypt(app)
-CORS(app, resources=r'/*', headers='Content-Type')
+cors = CORS(app, resources={r"/*": {"origins": "*"}}, headers="Content-Type")
 
 from models import User, Performer, Customer, UserSchema, PerformerSchema, CustomerSchema, Job, JobSchema, Message, MessageSchema, Transaction, TransactionSchema, Report, ReportSchema
 
@@ -38,6 +38,7 @@ def home():
 #### USERS
 
 @app.route('/user/', methods=['GET', 'POST'])
+@cross_origin(allow_headers=['Content-Type'])
 def users():
     if request.method == 'POST':
 
@@ -198,6 +199,7 @@ def login():
 
 
 @app.route('/job/', methods=["POST"])
+@cross_origin(allow_headers=['Content-Type'])
 def create_job():
     email = request.json.get('email')
     password = request.json.get('password')
@@ -256,6 +258,7 @@ def list_jobs():
     return jsonify({'your jobs are': job_output})
 
 @app.route('/delete_job/', methods=["POST"])
+@cross_origin(allow_headers=['Content-Type'])
 def delete_job():
     id = request.json.get('id')
     job = Job.query.get(id)
