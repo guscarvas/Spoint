@@ -37,10 +37,10 @@ def home():
 #############
 #### USERS
 
-@app.route('/user/', methods=['GET', 'POST'])
+@app.route('/user/', methods=['GET', 'POST', 'OPTIONS'])
 @cross_origin(allow_headers=['Content-Type'])
 def users():
-    if request.method == 'POST':
+    if request.method == 'POST' or request.method == 'OPTIONS':
 
         email = request.json.get('email')
         user = User.query.filter_by(email=email).first()
