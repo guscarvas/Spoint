@@ -40,7 +40,7 @@ def home():
 @app.route('/user/', methods=['GET', 'POST'])
 @cross_origin(allow_headers=['Content-Type'])
 def users():
-    if request.method == 'POST':
+    if request.method == 'GET':
 
         email = request.json.get('email')
         user = User.query.filter_by(email=email).first()
@@ -198,7 +198,7 @@ def login():
         return "Log in failed"
 
 
-@app.route('/job/', methods=["POST"])
+@app.route('/job/', methods=["GET"])
 @cross_origin(allow_headers=['Content-Type'])
 def create_job():
     email = request.json.get('email')
@@ -257,7 +257,7 @@ def list_jobs():
 
     return jsonify({'your jobs are': job_output})
 
-@app.route('/delete_job/', methods=["POST"])
+@app.route('/delete_job/', methods=["GET"])
 @cross_origin(allow_headers=['Content-Type'])
 def delete_job():
     id = request.json.get('id')
