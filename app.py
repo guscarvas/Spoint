@@ -130,7 +130,7 @@ def search():
         performers_query = performers_query.filter(Performer.cost_per_hour > cost_minimum)
     if request.json.get('cost_max'):
         cost_max = request.json.get('cost_max')
-        performers_query.filter(Performer.cost_per_hour > cost_max)
+        performers_query.filter(Performer.cost_per_hour < cost_max)
 
 
 
