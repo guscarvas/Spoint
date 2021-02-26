@@ -331,7 +331,7 @@ def populate():
     db.session.commit()
 
     newcustomer = Customer(email='test@email.com', user=newuser, name='Professor',
-                           fiscal_code="10129", address='Corso Duca degli Abruzzi, 24', profile_pic_url='https://www.facebook.com/PoliToSpotted/photos/a.192522307903049/192522311236382/')
+                           fiscal_code="10129", address='Corso Duca degli Abruzzi, 24', profile_pic_url='https://scontent.fgru5-1.fna.fbcdn.net/v/t1.0-9/17309045_192522311236382_5190942424822553922_n.png?_nc_cat=109&ccb=3&_nc_sid=09cbfe&_nc_ohc=TYzPv6VGpxwAX9p0x4E&_nc_ht=scontent.fgru5-1.fna&oh=2157905807786214bfa4f02fa0bdf939&oe=605DBB98')
 
     db.session.add(newcustomer)
     db.session.commit()
