@@ -234,7 +234,7 @@ def create_job():
             price_per_hour = request.json.get('price_per_hour')
 
 
-            addedjob = Job(customer=customer_query, performer=performer_query, performer_name=performer_query.name, customer_name=customer_query.name,
+            addedjob = Job(customer=customer_query, performer=performer_query, performer_name=performer_query.name, performer_email=performer_query.email, customer_name=customer_query.name,customer_email=customer_query.email,
                            title=title, end_time=end_time,start_time=start_time, address=address, price_per_hour=price_per_hour)
             db.session.add(addedjob)
             db.session.commit()
@@ -331,7 +331,7 @@ def populate():
     db.session.commit()
 
     newcustomer = Customer(email='test@email.com', user=newuser, name='Professor',
-                           fiscal_code="10129", address='Corso Duca degli Abruzzi, 24', profile_pic_url='https://www.google.com/url?sa=i&url=https%3A%2F%2Fit.wikipedia.org%2Fwiki%2FPolitecnico_di_Torino&psig=AOvVaw3l4ye8DgXp82ylOfwL_ppd&ust=1614458559545000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCLjaovq0iO8CFQAAAAAdAAAAABAD')
+                           fiscal_code="10129", address='Corso Duca degli Abruzzi, 24', profile_pic_url='https://www.facebook.com/PoliToSpotted/photos/a.192522307903049/192522311236382/')
 
     db.session.add(newcustomer)
     db.session.commit()
