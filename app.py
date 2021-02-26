@@ -201,8 +201,8 @@ def login():
             user_jobs = Job.query.filter_by(customer=user.customer)
             job_schema = JobSchema(many=True)
             job_output = job_schema.dump(user_jobs).data
-            output['jobs'] = job_output
 
+        output['jobs'] = job_output
         return jsonify({'user': output})
     else:
         return "Log in failed"
