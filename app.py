@@ -226,9 +226,9 @@ def create_job():
 
             title = request.json.get('title')
             start_time = request.json.get('start_time')
-            start_time = datetime.strptime(start_time, '%Y-%m-%d, %H:%M')
+            start_time = datetime.strptime(start_time, '%Y-%m-%d,%H:%M')
             end_time = request.json.get('end_time')
-            end_time = datetime.strptime(end_time, '%Y-%m-%d, %H:%M')
+            end_time = datetime.strptime(end_time, '%Y-%m-%d,%H:%M')
 
             address = request.json.get('address')
             price_per_hour = request.json.get('price_per_hour')
