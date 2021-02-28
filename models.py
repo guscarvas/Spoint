@@ -60,10 +60,7 @@ class Job(db.Model):
 
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
     performer_id = db.Column(db.Integer, db.ForeignKey('performer.id'))
-    customer_name = db.Column(db.String(200), nullable=False)
-    customer_email = db.Column(db.String(200), nullable=False)
-    performer_name = db.Column(db.String(200), nullable=False)
-    performer_email = db.Column(db.String(200), nullable=False)
+
     title = db.Column(db.String(200), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)

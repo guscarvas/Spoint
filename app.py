@@ -194,6 +194,12 @@ def login():
             user_jobs = Job.query.filter_by(performer=user.performer)
             job_schema = JobSchema(many=True)
             job_output = job_schema.dump(user_jobs).data
+            for job in job_output:
+                job['performer_name'] = user.performer.name
+                job['performer_email'] = user.performer.email
+                customer_query = Customer.query.get(job['customer'])
+                job['customer_name'] = customer_query.name
+                job['customer_email'] = customer_query.email
 
         else:
             customer_schema = CustomerSchema()
@@ -201,6 +207,12 @@ def login():
             user_jobs = Job.query.filter_by(customer=user.customer)
             job_schema = JobSchema(many=True)
             job_output = job_schema.dump(user_jobs).data
+            for job in job_output:
+                job['customer_name'] = user.customer.name
+                job['customer_email'] = user.customer.email
+                performer_query = Performer.query.get(job['performer'])
+                job['performer_name'] = performer_query.name
+                job['performer_email'] = performer_query.email
 
         output['jobs'] = job_output
         return jsonify({'user': output})
@@ -234,7 +246,7 @@ def create_job():
             price_per_hour = request.json.get('price_per_hour')
 
 
-            addedjob = Job(customer=customer_query, performer=performer_query, performer_name=performer_query.name, performer_email=performer_query.email, customer_name=customer_query.name,customer_email=customer_query.email,
+            addedjob = Job(customer=customer_query, performer=performer_query,
                            title=title, end_time=end_time,start_time=start_time, address=address, price_per_hour=price_per_hour)
             db.session.add(addedjob)
             db.session.commit()
