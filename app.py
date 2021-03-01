@@ -125,7 +125,7 @@ def search():
         performers_query = performers_query.filter_by(category=category)
     if request.json.get('genre'):
         genre = request.json.get('genre')
-        performers_query.filter_by(genre=genre)
+        performers_query = performers_query.filter_by(genre=genre)
     if request.json.get('cost_minimum'):
         cost_minimum = request.json.get('cost_minimum')
         performers_query = performers_query.filter(Performer.cost_per_hour >= cost_minimum)
