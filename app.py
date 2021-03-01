@@ -297,19 +297,19 @@ def update_job():
 
 @app.route('/populate/', methods=['GET'])
 def populate():
-    x = [["giusto.aloia@gmail.com", "Giusto Aloia", "Singer", "12-bar blues", "Turin", "Via Volto San Luca 15",     "10020", 500, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1460723237483-7a6dc9d0b212.jpeg"],
-    ["paolo.selvaggio@gmail.com", "Paolo Selvaggio", "Singer", "pop", "Turin", "Via Giberti 101", "10080",     700, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1463453091185-61582044d556.jpeg"],
-    ["leontina.biancardi@gmail.com", "Leontina Biancardi", "Singer", "pop", "Turin", "Via Enrico Fermi 15",     "10027", 550, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1474959783111-a0f551bdad25.jpeg"],
-    ["giona.bellomo@gmail.com", "Giona Bellomo", "Singer", "pop", "Turin", "Via Adua 94", "10091", 700,     "https://spoint.s3-sa-east-1.amazonaws.com/photo-1492562080023-ab3db95bfbce.jpeg"],
-    ["irma.pittaluga@gmail.com", "Irma Pittaluga",     "Stand-up Comedy",'', "Turin", "Via Volto San Luca 134", "10086", 750, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1493666438817-866a91353ca9.jpeg"],
-    ["susanna.farro@gmail.com", "Susanna Farro", "Singer", "rock", "Turin", "Via Giberti 25", "10080", 900,     "https://spoint.s3-sa-east-1.amazonaws.com/photo-1494790108377-be9c29b29330.jpeg"],
-    ["pio.carnevale@gmail.com", "Pio Carnevale", "Singer", "jazz", "Turin", "Via Volto San Luca 119", "10099",     500, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1499996860823-5214fcc65f8f.jpeg"],
-    ["floro.scordato@gmail.com", "Floro Scordato", "Singer", "jazz", "Turin", "Via del Pontiere 58", "10050",     100, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1506794778202-cad84cf45f1d.jpeg"],
-    ["sebastiana.airaldi@gmail.com", "Sebastiana Airaldi", "Singer", "rock", "Milan", "Via Nazario Sauro 140",     "20020", 500, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1512310604669-443f26c35f52.jpeg"],
-    ["andreina.sessa@gmail.com", "Andreina Sessa", "Singer", "rock", "Milan", "Via San Pietro Ad Aram 72",     "20080", 750, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1524504388940-b1c1722653e1.jpeg"],
-    ["orsola.natale@gmail.com", "Orsola Natale", "Singer", "pop", "Rome", "Via Longhena 75", "00047", 750,     "https://spoint.s3-sa-east-1.amazonaws.com/photo-1534751516642-a1af1ef26a56.jpeg"],
-    ["giuseppina.padovano@gmail.com", "Giuseppina Padovano", "Stand-up Comedy", "pop", "Rome",     "Via Colonnello Galliano 5", "00020", 200,     "https://spoint.s3-sa-east-1.amazonaws.com/photo-1557555187-23d685287bc3.jpeg"],
-    ["loretta.rocco@gmail.com", "Loretta Rocco", "Singer", "pop", "Rome", "Via Longhena 82", "00040", 350,     "https://spoint.s3-sa-east-1.amazonaws.com/photo-1593697821252-0c9137d9fc45.jpeg"]]
+    x = [["giusto.aloia@gmail.com", "Giusto Aloia", "Singer", "acoustic", "Turin", "Via Volto San Luca 15",     "10020", 45, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1460723237483-7a6dc9d0b212.jpeg"],
+    ["paolo.selvaggio@gmail.com", "Paolo Selvaggio", "Singer", "pop", "Turin", "Via Giberti 101", "10080",     400, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1463453091185-61582044d556.jpeg"],
+    ["leontina.biancardi@gmail.com", "Leontina Biancardi", "Singer", "acoustic", "Turin", "Via Enrico Fermi 15",     "10027", 35, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1474959783111-a0f551bdad25.jpeg"],
+    ["giona.bellomo@gmail.com", "Giona Bellomo", "Singer", "acoustic", "Turin", "Via Adua 94", "10091", 30,     "https://spoint.s3-sa-east-1.amazonaws.com/photo-1492562080023-ab3db95bfbce.jpeg"],
+    ["irma.pittaluga@gmail.com", "Irma Pittaluga",     "Stand-up Comedy",'', "Turin", "Via Volto San Luca 134", "10086", 100, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1493666438817-866a91353ca9.jpeg"],
+    ["susanna.farro@gmail.com", "Susanna Farro", "Singer", "rock", "Turin", "Via Giberti 25", "10080", 60,     "https://spoint.s3-sa-east-1.amazonaws.com/photo-1494790108377-be9c29b29330.jpeg"],
+    ["pio.carnevale@gmail.com", "Pio Carnevale", "Singer", "acoustic", "Turin", "Via Volto San Luca 119", "10099",     39, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1499996860823-5214fcc65f8f.jpeg"],
+    ["floro.scordato@gmail.com", "Floro Scordato", "Singer", "jazz", "Turin", "Via del Pontiere 58", "10050",     70, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1506794778202-cad84cf45f1d.jpeg"],
+    ["sebastiana.airaldi@gmail.com", "Sebastiana Airaldi", "Singer", "rock", "Milan", "Via Nazario Sauro 140",     "20020", 20, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1512310604669-443f26c35f52.jpeg"],
+    ["andreina.sessa@gmail.com", "Andreina Sessa", "Singer", "rock", "Milan", "Via San Pietro Ad Aram 72",     "20080", 25, "https://spoint.s3-sa-east-1.amazonaws.com/photo-1524504388940-b1c1722653e1.jpeg"],
+    ["orsola.natale@gmail.com", "Orsola Natale", "Singer", "pop", "Rome", "Via Longhena 75", "00047", 650,     "https://spoint.s3-sa-east-1.amazonaws.com/photo-1534751516642-a1af1ef26a56.jpeg"],
+    ["giuseppina.padovano@gmail.com", "Giuseppina Padovano", "Stand-up Comedy", "pop", "Rome",     "Via Colonnello Galliano 5", "00020", 220,     "https://spoint.s3-sa-east-1.amazonaws.com/photo-1557555187-23d685287bc3.jpeg"],
+    ["loretta.rocco@gmail.com", "Loretta Rocco", "Singer", "pop", "Rome", "Via Longhena 82", "00040", 120,     "https://spoint.s3-sa-east-1.amazonaws.com/photo-1593697821252-0c9137d9fc45.jpeg"]]
 
     for performer in x:
         password = '12345678'
