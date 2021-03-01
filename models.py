@@ -12,15 +12,14 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(20), nullable=False)
-    # child = db.relationship('Child', uselist=False, backref="parent")
 
 class Performer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     jobs = db.relationship('Job', backref='performer')
 
+    email = db.Column(db.String(120), unique=True, nullable=False)
     name = db.Column(db.String(50), nullable=False)
     cost_per_hour = db.Column(db.Float, nullable=False, default=100)
     genre = db.Column(db.String(120), nullable=False, default="Rock")
@@ -34,20 +33,16 @@ class Performer(db.Model):
     money = db.Column(db.Float, nullable=False, default=0)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
-    # parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
 
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    #
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     jobs = db.relationship('Job', backref='customer')
 
-    # user = db.relationship("User", back_populates="customer")
-
+    email = db.Column(db.String(120), unique=True, nullable=False)
     name = db.Column(db.String(50), nullable=False)
     profile_pic_url = db.Column(db.String(300), nullable=True)
-    # birthday = db.Column(db.DateTime, nullable=False)
     score = db.Column(db.Float, nullable=False, default=0)
     fiscal_code = db.Column(db.String(20), nullable=False)
     address = db.Column(db.String(100), nullable=False)
@@ -66,22 +61,19 @@ class Job(db.Model):
     end_time = db.Column(db.DateTime, nullable=False)
     performer_score = db.Column(db.Float, nullable=False, default=0)
 
-    # customer_score =
-
     price_per_hour = db.Column(db.Float, nullable=False)
     address = db.Column(db.String(200), nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
 
     status = db.Column(db.String(20), nullable=False, default="Pending")
-    # Status will be one of these options: 'Pending', 'Accepted', 'Finished' and maybe 'Reviewed'? Don't know yet
+    # Status will be one of these options: 'Pending', 'Accepted', 'Finished'
 
 
 class UserSchema(ModelSchema):
     class Meta:
         model = User
         sql_session = db.session
-
 
 class PerformerSchema(ModelSchema):
     class Meta:
@@ -91,6 +83,11 @@ class PerformerSchema(ModelSchema):
 class CustomerSchema(ModelSchema):
     class Meta:
         model = Customer
+        sql_session = db.session
+
+class JobSchema(ModelSchema):
+    class Meta:
+        model = Job
         sql_session = db.session
 
 class Message(db.Model):
@@ -110,10 +107,7 @@ class MessageSchema(ModelSchema):
         model = Message
         sql_session = db.session
 
-class JobSchema(ModelSchema):
-    class Meta:
-        model = Job
-        sql_session = db.session
+
 
 
 class Transaction (db.Model):

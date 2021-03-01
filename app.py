@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Flask, jsonify, request, session, make_response
+from flask import Flask, jsonify, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_bcrypt import Bcrypt
@@ -9,7 +9,6 @@ from flask_cors import CORS, cross_origin
 import os
 import sqlite3
 
-# steven
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'sssdhgclshfsh;shd;jshjhsjhjhsjldchljk'
@@ -17,79 +16,81 @@ app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///website.db'
 
+#Initialize database
 db = SQLAlchemy(app)
-ma = Marshmallow(app)
-bcrypt = Bcrypt(app)
-cors = CORS(app, resources={r"/*": {"origins": "*"}}, headers="Content-Type", methods=['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'])
-# CORS(app, origins=['127.0.0.1:3000'])
 
+#Initialize marshmallow for jsonnifying queries
+ma = Marshmallow(app)
+
+#Initialize Bcrypt for password encryption
+bcrypt = Bcrypt(app)
+
+#Initialize CORS for supporting Cross-origin resource sharing, and receive requests from front end
+cors = CORS(app, resources={r"/*": {"origins": "*"}}, headers="Content-Type", methods=['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'])
+
+#Importing all models and Marshmallow Schemas
 from models import User, Performer, Customer, UserSchema, PerformerSchema, CustomerSchema, Job, JobSchema, Message, MessageSchema, Transaction, TransactionSchema, Report, ReportSchema
 
 
+#creating database
 db.create_all()
 db.session.commit()
 
 
 @app.route('/', methods=['GET'])  # Root of your web platform
 def home():
-    return '<h1>Hello World!</h1>'
+    return '<h1>Hello! Welcome to the Spoint BackEnd!</h1>'
 
 
 #############
 #### USERS
 
-@app.route('/user/', methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/user/', methods=['POST'])
 @cross_origin(allow_headers=['Content-Type'])
 def users():
-    # if request.method == 'OPTIONS':
-    #     response = make_response()
-    #     response.headers.add("Access-Control-Allow-Origin", "*")
-    #     response.headers.add('Access-Control-Allow-Headers', "*")
-    #     response.headers.add('Access-Control-Allow-Methods', "*")
-    #     return response
-    if request.method == 'POST':
 
-        email = request.json.get('email')
-        user = User.query.filter_by(email=email).first()
-        if user:
-            return "This email is already registered"
-        password_hash = bcrypt.generate_password_hash(request.json.get('password')).encode('utf-8')
-        role = request.json.get('role')
-        name = request.json.get('name')
-        fiscal_code = request.json.get('fiscal_code')
-        address = request.json.get('address')
-        profile_pic_url = "ABC"
-        if request.json.get('profile_pic_url'):
-            profile_pic_url = request.json.get('profile_pic_url')
+    email = request.json.get('email')
+    user = User.query.filter_by(email=email).first()
+    if user:
+        return "This email is already registered"
 
-        newuser = User(email=email, password=password_hash, role=role)
-        db.session.add(newuser)
-        db.session.commit()
+    password_hash = bcrypt.generate_password_hash(request.json.get('password')).encode('utf-8')
+    role = request.json.get('role')
+    name = request.json.get('name')
+    fiscal_code = request.json.get('fiscal_code')
+    address = request.json.get('address')
+    profile_pic_url = "ABC"
 
-        if role == 'Performer':
+    if request.json.get('profile_pic_url'):
+        profile_pic_url = request.json.get('profile_pic_url')
 
-            category = request.json.get('category')
-            genre = "None"
-            if request.json.get('genre'):
-                genre = request.json.get('genre')
-            cost_per_hour = request.json.get('cost_per_hour')
-            birthday = request.json.get('birthday')
-            birthday = datetime.strptime(birthday, '%d-%m-%Y')
-            search_city = request.json.get('search_city')
-            newperformer = Performer(email=email, user=newuser, name=name, category=category, genre=genre, birthday=birthday,
-                                     cost_per_hour=cost_per_hour,fiscal_code=fiscal_code, address=address, search_city=search_city,
-                                     profile_pic_url=profile_pic_url)
-            db.session.add(newperformer)
-            performer_schema = PerformerSchema()
-            output = performer_schema.dump(newperformer).data
-        if role == 'Customer':
-            newcustomer = Customer(email=email, user=newuser, name=name,
-                                   fiscal_code=fiscal_code, address=address, profile_pic_url=profile_pic_url)
-            db.session.add(newcustomer)
-            customer_schema = CustomerSchema()
-            output = customer_schema.dump(newcustomer).data
-        db.session.commit()
-        return jsonify(output)
+    newuser = User(email=email, password=password_hash, role=role)
+    db.session.add(newuser)
+    db.session.commit()
+
+    if role == 'Performer':
+        category = request.json.get('category')
+        genre = "None"
+        if request.json.get('genre'):
+            genre = request.json.get('genre')
+        cost_per_hour = request.json.get('cost_per_hour')
+        birthday = request.json.get('birthday')
+        birthday = datetime.strptime(birthday, '%d-%m-%Y')
+        search_city = request.json.get('search_city')
+        newperformer = Performer(email=email, user=newuser, name=name, category=category, genre=genre, birthday=birthday,
+                                 cost_per_hour=cost_per_hour, fiscal_code=fiscal_code, address=address, search_city=search_city,
+                                 profile_pic_url=profile_pic_url)
+        db.session.add(newperformer)
+        performer_schema = PerformerSchema()
+        output = performer_schema.dump(newperformer).data
+    if role == 'Customer':
+        newcustomer = Customer(email=email, user=newuser, name=name,
+                               fiscal_code=fiscal_code, address=address, profile_pic_url=profile_pic_url)
+        db.session.add(newcustomer)
+        customer_schema = CustomerSchema()
+        output = customer_schema.dump(newcustomer).data
+    db.session.commit()
+    return jsonify(output)
 
 @app.route('/performer/', methods=['GET'])
 def performers():
@@ -127,19 +128,11 @@ def search():
         performers_query.filter_by(genre=genre)
     if request.json.get('cost_minimum'):
         cost_minimum = request.json.get('cost_minimum')
-        performers_query = performers_query.filter(Performer.cost_per_hour > cost_minimum)
+        performers_query = performers_query.filter(Performer.cost_per_hour >= cost_minimum)
     if request.json.get('cost_max'):
         cost_max = request.json.get('cost_max')
-        performers_query.filter(Performer.cost_per_hour < cost_max)
+        performers_query = performers_query.filter(Performer.cost_per_hour <= cost_max)
 
-
-
-    # category = request.json.get('category')
-    # genre = request.json.get('genre')
-    # cost_minimum = request.json.get('cost_minimum')
-    # cost_max = request.json.get('cost_max')
-    # performers_query = Performer.query.filter_by(category=category, genre=genre, search_city=city)
-    # performers_query = performers_query.filter(Performer.cost_per_hour > cost_minimum).filter(Performer.cost_per_hour < cost_max).all()
     performer_schema = PerformerSchema(many=True)
     performers_output = performer_schema.dump(performers_query).data
     return jsonify({'performers': performers_output})
